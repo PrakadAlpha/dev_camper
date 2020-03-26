@@ -3,9 +3,8 @@ const dotenv = require('dotenv');
 // const logger = require('./middleware/logger');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
-const colors = require('colors');
 const errorHandler = require('./middleware/error')
-
+const colors = require('colors')
 
 
 //Setup environment varibles
