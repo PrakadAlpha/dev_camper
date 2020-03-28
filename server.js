@@ -5,7 +5,9 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error')
 const colors = require('colors')
-
+const filesupload = require('express-fileupload');
+const path = require('path');
+const cookieParser = require('cookie-parser')
 
 //Setup environment varibles
 dotenv.config({path:'./config/config.env'})
@@ -14,6 +16,8 @@ dotenv.config({path:'./config/config.env'})
 connectDB();
 
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
+const auth = require('./routes/auth');
 
 const app = express();
 
@@ -23,10 +27,21 @@ if(process.env.NODE_ENV === 'development'){
   app.use(morgan('dev'));
 }
 
+app.use(filesupload());
+
+app.use(cookieParser());
+
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 // app.use(logger);
 
-app.use('/api/v1/bootcamps/', bootcamps)
+app.use('/api/v1/bootcamps/', bootcamps);
  
+app.use('/api/v1/courses/', courses);
+
+app.use('/api/v1/auth/', auth);
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
