@@ -8,6 +8,14 @@ const colors = require('colors')
 const filesupload = require('express-fileupload');
 const path = require('path');
 const cookieParser = require('cookie-parser')
+const sanitize = require('express-mongo-sanitize')
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
+const cors = require('cors');
+
+
 
 //Setup environment varibles
 dotenv.config({path:'./config/config.env'})
@@ -29,10 +37,32 @@ if(process.env.NODE_ENV === 'development'){
   app.use(morgan('dev'));
 }
 
+//Nosql injection
+app.use(sanitize());
+
+//precautionary security headers
+app.use(helmet());
+
+//CrossSiteScripting
+app.use(xss());
+
+//CrossOriginResourceSharing
+app.use(cors());
+
 app.use(filesupload());
 
 app.use(cookieParser());
 
+//100 requests per limit
+ const limiter = rateLimit({
+   windowMs: 10 * 1000 * 60,
+   max: 100
+ })
+
+ app.use(limiter);
+
+ //http parameter pollution attack
+ app.use(hpp());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
