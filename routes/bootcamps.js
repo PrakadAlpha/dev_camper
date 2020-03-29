@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router();
 const advancedResults = require('../middleware/advancedResults')
 const Bootcamp = require('../models/Bootcamp')
-
 const {getBootcamps, 
        getBootcamp, 
        createBootcamp, 
@@ -15,7 +14,9 @@ const {protect, authorize} = require('../middleware/auth');
 
 //Redirect the courses routes
 const courseRouter = require('./courses');
+const reviewsRouter = require('./reviews');
 router.use('/:bootcampId/courses', courseRouter);
+router.use('/:bootcampId/reviews', reviewsRouter);
 
 router.route('/radius/:zipCode/:distance')
       .get(getBootcampsInRadius)

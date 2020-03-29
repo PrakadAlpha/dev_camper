@@ -2,7 +2,7 @@ const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/ErrorResponse');
 const asyncHandlers = require('../middleware/async');
 const Course = require('../models/Course');
-
+const User = require('../models/User')
 
 //@desc    Get all courses in bootcamps
 //@route   GET /api/v1/courses/:bootcampId/courses
@@ -52,6 +52,10 @@ exports.addCourse = asyncHandlers(async(req, res, next) => {
     return next(new ErrorResponse('No bootcamp with this id..', 404));
   }
 
+  if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User with id ${req.user.id} not authorized to do this operation`, 401));
+  }
+
   const course = await Course.create(req.body);
 
   res.status(200).json({success: true, data: course});
@@ -68,6 +72,10 @@ exports.updateCourse = asyncHandlers(async(req, res, next) => {
 
   if(!course){
     return next(new ErrorResponse('No course with this id..', 404));
+  }
+
+  if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User with id ${req.user.id} not authorized to do this operation`, 401));
   }
 
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
@@ -89,6 +97,10 @@ exports.deleteCourse = asyncHandlers(async(req, res, next) => {
 
   if(!course){
     return next(new ErrorResponse('No course with this id..', 404));
+  }
+
+  if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin'){
+    return next(new ErrorResponse(`User with id ${req.user.id} not authorized to do this operation`, 401));
   }
 
   await Course.findByIdAndRemove(req.params.id)
